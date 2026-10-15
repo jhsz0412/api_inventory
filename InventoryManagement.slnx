@@ -1,0 +1,77 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/InventoryManagement.Api/InventoryManagement.Api.csproj" />
+  </Folder>
+  <Folder Name="/src/BuildingBlocks/">
+    <Project Path="src/BuildingBlocks/BuildingBlocks.Application/BuildingBlocks.Application.csproj" />
+    <Project Path="src/BuildingBlocks/BuildingBlocks.Domain/BuildingBlocks.Domain.csproj" />
+    <Project Path="src/BuildingBlocks/BuildingBlocks.Infrastructure/BuildingBlocks.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/" />
+  <Folder Name="/src/Modules/Approvals/">
+    <Project Path="src/Modules/Approvals/Approvals.Application/Approvals.Application.csproj" />
+    <Project Path="src/Modules/Approvals/Approvals.Domain/Approvals.Domain.csproj" />
+    <Project Path="src/Modules/Approvals/Approvals.Infrastructure/Approvals.Infrastructure.csproj" />
+    <Project Path="src/Modules/Approvals/Approvals.Presentation/Approvals.Presentation.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Delivery/">
+    <Project Path="src/Modules/Delivery/Delivery.Application/Delivery.Application.csproj" />
+    <Project Path="src/Modules/Delivery/Delivery.Domain/Delivery.Domain.csproj" />
+    <Project Path="src/Modules/Delivery/Delivery.Infrastructure/Delivery.Infrastructure.csproj" />
+    <Project Path="src/Modules/Delivery/Delivery.Presentation/Delivery.Presentation.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Fulfillment/">
+    <Project Path="src/Modules/Fulfillment/Fulfillment.Application/Fulfillment.Application.csproj" />
+    <Project Path="src/Modules/Fulfillment/Fulfillment.Domain/Fulfillment.Domain.csproj" />
+    <Project Path="src/Modules/Fulfillment/Fulfillment.Infrastructure/Fulfillment.Infrastructure.csproj" />
+    <Project Path="src/Modules/Fulfillment/Fulfillment.Presentation/Fulfillment.Presentation.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Identity/">
+    <Project Path="src/Modules/Identity/Identity.Application/Identity.Application.csproj" />
+    <Project Path="src/Modules/Identity/Identity.Domain/Identity.Domain.csproj" />
+    <Project Path="src/Modules/Identity/Identity.Infrastructure/Identity.Infrastructure.csproj" />
+    <Project Path="src/Modules/Identity/Identity.Presentation/Identity.Presentation.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Inventory/">
+    <Project Path="src/Modules/Inventory/Inventory.Application/Inventory.Application.csproj" />
+    <Project Path="src/Modules/Inventory/Inventory.Domain/Inventory.Domain.csproj" />
+    <Project Path="src/Modules/Inventory/Inventory.Infrastructure/Inventory.Infrastructure.csproj" />
+    <Project Path="src/Modules/Inventory/Inventory.Presentation/Inventory.Presentation.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Notifications/">
+    <Project Path="src/Modules/Notifications/Notifications.Application/Notifications.Application.csproj" />
+    <Project Path="src/Modules/Notifications/Notifications.Domain/Notifications.Domain.csproj" />
+    <Project Path="src/Modules/Notifications/Notifications.Infrastructure/Notifications.Infrastructure.csproj" />
+    <Project Path="src/Modules/Notifications/Notifications.Presentation/Notifications.Presentation.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Organization/">
+    <Project Path="src/Modules/Organization/Organization.Application/Organization.Application.csproj" />
+    <Project Path="src/Modules/Organization/Organization.Domain/Organization.Domain.csproj" />
+    <Project Path="src/Modules/Organization/Organization.Infrastructure/Organization.Infrastructure.csproj" />
+    <Project Path="src/Modules/Organization/Organization.Presentation/Organization.Presentation.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Planning/">
+    <Project Path="src/Modules/Planning/Planning.Application/Planning.Application.csproj" />
+    <Project Path="src/Modules/Planning/Planning.Domain/Planning.Domain.csproj" />
+    <Project Path="src/Modules/Planning/Planning.Infrastructure/Planning.Infrastructure.csproj" />
+    <Project Path="src/Modules/Planning/Planning.Presentation/Planning.Presentation.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Reporting/">
+    <Project Path="src/Modules/Reporting/Reporting.Application/Reporting.Application.csproj" />
+    <Project Path="src/Modules/Reporting/Reporting.Domain/Reporting.Domain.csproj" />
+    <Project Path="src/Modules/Reporting/Reporting.Infrastructure/Reporting.Infrastructure.csproj" />
+    <Project Path="src/Modules/Reporting/Reporting.Presentation/Reporting.Presentation.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/Requisitions/">
+    <Project Path="src/Modules/Requisitions/Requisitions.Application/Requisitions.Application.csproj" />
+    <Project Path="src/Modules/Requisitions/Requisitions.Domain/Requisitions.Domain.csproj" />
+    <Project Path="src/Modules/Requisitions/Requisitions.Infrastructure/Requisitions.Infrastructure.csproj" />
+    <Project Path="src/Modules/Requisitions/Requisitions.Presentation/Requisitions.Presentation.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/InventoryManagement.ApiTests/InventoryManagement.ApiTests.csproj" />
+    <Project Path="tests/InventoryManagement.ArchitectureTests/InventoryManagement.ArchitectureTests.csproj" />
+    <Project Path="tests/InventoryManagement.IntegrationTests/InventoryManagement.IntegrationTests.csproj" />
+    <Project Path="tests/InventoryManagement.UnitTests/InventoryManagement.UnitTests.csproj" />
+  </Folder>
+</Solution>
