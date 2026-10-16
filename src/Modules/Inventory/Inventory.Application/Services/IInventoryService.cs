@@ -150,5 +150,21 @@ public interface IInventoryService
     Task IssueStockAtLocationBatchAsync(
         IssueStockAtLocationBatchRequest request,
         CancellationToken cancellationToken = default);
+    Task<InventoryItem?> UpdateItemAsync(
+        Guid id,
+        UpdateInventoryItemRequest request,
+        CancellationToken cancellationToken = default);
+
+    Task<bool> DeactivateItemAsync(
+    Guid id,
+    CancellationToken cancellationToken = default);
+
+    Task<bool> RestoreItemAsync(
+    Guid id,
+    CancellationToken cancellationToken = default);
+
+    Task<bool> PermanentlyDeleteItemAsync(
+    Guid id,
+    CancellationToken cancellationToken = default);
 
 }

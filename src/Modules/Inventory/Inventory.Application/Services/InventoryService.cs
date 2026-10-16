@@ -1375,4 +1375,162 @@ public async Task<InventoryStockBalance> AdjustStockAsync(
     }
 
 
+    public async Task<InventoryItem?> UpdateItemAsync(
+        Guid id,
+        UpdateInventoryItemRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(request);
+
+        var item = await _repository.GetItemByIdAsync(
+            id,
+            cancellationToken);
+
+        if (item is null)
+            return null;
+
+        var category = await _repository.GetCategoryByIdAsync(
+            request.CategoryId,
+            cancellationToken);
+
+        if (category is null)
+        {
+            throw new KeyNotFoundException(
+                $"Category '{request.CategoryId}' was not found.");
+        }
+
+        if (!category.IsActive)
+        {
+            throw new InvalidOperationException(
+                "Cannot assign an item to an inactive category.");
+        }
+
+        var unit = await _repository.GetUnitOfMeasureByIdAsync(
+            request.UnitOfMeasureId,
+            cancellationToken);
+
+        if (unit is null)
+        {
+            throw new KeyNotFoundException(
+                $"Unit of measure '{request.UnitOfMeasureId}' was not found.");
+        }
+
+        if (!unit.IsActive)
+        {
+            throw new InvalidOperationException(
+                "Cannot assign an inactive unit of measure to an item.");
+        }
+
+        item.Update(
+            request.Name,
+            request.Description,
+            request.CategoryId,
+            request.UnitOfMeasureId,
+            request.ReorderLevel);
+
+        await _repository.SaveChangesAsync(cancellationToken);
+
+        return item;
+    }
+
+    public async Task<bool> DeactivateItemAsync(
+    Guid id,
+    CancellationToken cancellationToken = default)
+    {
+        var item = await _repository.GetItemByIdAsync(
+            id,
+            cancellationToken);
+
+        if (item is null)
+            return false;
+
+        if (!item.IsActive)
+            throw new InvalidOperationException(
+                "The inventory item is already inactive.");
+
+        item.Deactivate();
+
+        await _repository.SaveChangesAsync(cancellationToken);
+
+        return true;
+    }
+
+
+    public async Task<bool> RestoreItemAsync(
+        Guid id,
+        CancellationToken cancellationToken = default)
+    {
+        var item = await _repository.GetItemByIdAsync(
+            id,
+            cancellationToken);
+
+        if (item is null)
+            return false;
+
+        if (item.IsActive)
+        {
+            throw new InvalidOperationException(
+                "The inventory item is already active.");
+        }
+
+        item.Activate();
+
+        await _repository.SaveChangesAsync(cancellationToken);
+
+        return true;
+    }
+
+
+    public async Task<bool> PermanentlyDeleteItemAsync(
+        Guid id,
+        CancellationToken cancellationToken = default)
+    {
+        var item = await _repository.GetItemByIdAsync(
+            id,
+            cancellationToken);
+
+        if (item is null)
+            return false;
+
+        if (item.IsActive)
+        {
+            throw new InvalidOperationException(
+                "Only inactive inventory items can be permanently deleted. " +
+                "Deactivate the item first.");
+        }
+
+        var stockBalance = await _repository.GetStockBalanceByItemIdAsync(
+            id,
+            cancellationToken);
+
+        var locationBalances =
+            await _repository.GetLocationStockBalancesByItemIdAsync(
+                id,
+                cancellationToken);
+
+        var stockTransactions =
+            await _repository.GetStockTransactionsByItemIdAsync(
+                id,
+                cancellationToken);
+
+        if (stockBalance is not null ||
+            locationBalances.Count > 0 ||
+            stockTransactions.Count > 0)
+        {
+            throw new InvalidOperationException(
+                "This inventory item cannot be permanently deleted because " +
+                "it has stock balance records or stock transaction history.");
+        }
+
+        await _repository.DeleteItemAsync(item, cancellationToken);
+
+        await _repository.SaveChangesAsync(cancellationToken);
+
+        return true;
+    }
+
+
+
+
+
 }

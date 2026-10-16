@@ -86,7 +86,7 @@ public sealed class RequisitionApprovalController(
             var result = await coordinator.RejectAsync(
                 id, actorId.Value, request, cancellationToken);
 
-            return Ok(result);
+            return result is null ? NotFound() : Ok(result);
         }
         catch (KeyNotFoundException exception)
         {
