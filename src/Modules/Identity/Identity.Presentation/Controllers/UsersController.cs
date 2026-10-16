@@ -9,7 +9,9 @@ namespace Identity.Presentation.Controllers;
 
 [ApiController]
 [Route("api/identity/users")]
-public sealed class UsersController(IUserService userService) : ControllerBase
+public sealed class UsersController(
+    IUserService userService,
+    IRevokedTokenRepository revokedTokenRepository) : ControllerBase
 {
     [Authorize(Policy = "permission:identity.users.manage")]
     [HttpPost]
@@ -73,5 +75,68 @@ public sealed class UsersController(IUserService userService) : ControllerBase
             Email = User.FindFirstValue(ClaimTypes.Email)
         });
     }
+
+
+
+    [Authorize]
+    [HttpPost("/api/identity/logout")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Logout(
+        CancellationToken cancellationToken)
+    {
+        var tokenId = User.FindFirstValue("jti");
+
+        var authorizationHeader =
+            Request.Headers.Authorization.ToString();
+
+        const string bearerPrefix = "Bearer ";
+
+        if (string.IsNullOrWhiteSpace(tokenId) ||
+            !authorizationHeader.StartsWith(
+                bearerPrefix,
+                StringComparison.OrdinalIgnoreCase))
+        {
+            return BadRequest(new
+            {
+                message = "Unable to identify the current access token."
+            });
+        }
+
+        var accessToken = authorizationHeader[bearerPrefix.Length..].Trim();
+
+        if (string.IsNullOrWhiteSpace(accessToken))
+        {
+            return BadRequest(new
+            {
+                message = "The access token is missing."
+            });
+        }
+
+        var expirationClaim = User.FindFirstValue("exp");
+
+        if (!long.TryParse(expirationClaim, out var expirationUnixSeconds))
+        {
+            return BadRequest(new
+            {
+                message = "The access token expiration claim is missing."
+            });
+        }
+
+        var expiresAtUtc =
+            DateTimeOffset.FromUnixTimeSeconds(expirationUnixSeconds);
+
+        await revokedTokenRepository.RevokeAsync(
+            tokenId,
+            expiresAtUtc,
+            cancellationToken);
+
+        return Ok(new
+        {
+            message = "Logged out successfully. The access token has been revoked."
+        });
+    }
+
+
 
 }

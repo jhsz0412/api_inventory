@@ -36,6 +36,7 @@ public static class DependencyInjection
         services.AddScoped<IRolePermissionService, RolePermissionService>();
         services.AddScoped<IUserRoleRepository, UserRoleRepository>();
         services.AddScoped<IUserRoleService, UserRoleService>();
+        services.AddScoped<IRevokedTokenRepository, RevokedTokenRepository>();
 
         return services;
 
