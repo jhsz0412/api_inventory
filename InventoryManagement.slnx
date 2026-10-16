@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/src/">
     <Project Path="src/InventoryManagement.Api/InventoryManagement.Api.csproj" />
+    <Project Path="src/InventoryManagement.DatabaseSetup/InventoryManagement.DatabaseSetup.csproj" />
   </Folder>
   <Folder Name="/src/BuildingBlocks/">
     <Project Path="src/BuildingBlocks/BuildingBlocks.Application/BuildingBlocks.Application.csproj" />

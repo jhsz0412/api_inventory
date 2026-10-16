@@ -33,6 +33,8 @@
     <ProjectReference Include="..\Modules\Reporting\Reporting.Infrastructure\Reporting.Infrastructure.csproj" />
     <ProjectReference Include="..\Modules\Reporting\Reporting.Presentation\Reporting.Presentation.csproj" />
     <ProjectReference Include="..\Modules\Identity\Identity.Presentation\Identity.Presentation.csproj" />
+    <ProjectReference Include="..\Modules\Approvals\Approvals.Infrastructure\Approvals.Infrastructure.csproj" />
+    <ProjectReference Include="..\Modules\Approvals\Approvals.Presentation\Approvals.Presentation.csproj" />
   </ItemGroup>
 
 </Project>
