@@ -20,6 +20,8 @@ public class IdentityDbContext : DbContext
 
     public DbSet<RolePermission> RolePermissions => Set<RolePermission>();
 
+    public DbSet<RevokedToken> RevokedTokens => Set<RevokedToken>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
