@@ -358,5 +358,15 @@ public sealed class InventoryRepository : IInventoryRepository
             .OrderBy(x => x.CreatedAtUtc)
             .ToListAsync(cancellationToken);
     }
+    public Task DeleteItemAsync(
+    InventoryItem item,
+    CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(item);
+
+        _context.InventoryItems.Remove(item);
+
+        return Task.CompletedTask;
+    }
 
 }

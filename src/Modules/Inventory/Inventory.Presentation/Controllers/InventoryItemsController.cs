@@ -64,4 +64,105 @@ public sealed class InventoryItemsController : ControllerBase
             return BadRequest(new { message = ex.Message });
         }
     }
+
+
+
+    [Authorize(Policy = "permission:inventory.items.update")]
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> UpdateItem(
+        Guid id,
+        [FromBody] UpdateInventoryItemRequest request,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var item = await _inventoryService.UpdateItemAsync(
+                id,
+                request,
+                cancellationToken);
+
+            return item is null ? NotFound() : Ok(item);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(new { message = ex.Message });
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
+    [Authorize(Policy = "permission:inventory.items.delete")]
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> DeleteItem(
+    Guid id,
+    CancellationToken cancellationToken)
+    {
+        try
+        {
+            var deleted = await _inventoryService.DeactivateItemAsync(
+                id,
+                cancellationToken);
+
+            return deleted ? NoContent() : NotFound();
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(new { message = ex.Message });
+        }
+    }
+
+
+    [Authorize(Policy = "permission:inventory.items.restore")]
+    [HttpPut("{id:guid}/restore")]
+    public async Task<IActionResult> RestoreItem(
+        Guid id,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var restored = await _inventoryService.RestoreItemAsync(
+                id,
+                cancellationToken);
+
+            return restored
+                ? NoContent()
+                : NotFound();
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(new { message = ex.Message });
+        }
+    }
+
+
+    [Authorize(Policy = "permission:inventory.items.delete-permanent")]
+    [HttpDelete("{id:guid}/permanent")]
+    public async Task<IActionResult> PermanentlyDeleteItem(
+        Guid id,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var deleted =
+                await _inventoryService.PermanentlyDeleteItemAsync(
+                    id,
+                    cancellationToken);
+
+            return deleted ? NoContent() : NotFound();
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(new { message = ex.Message });
+        }
+    }
+
+
+
+
 }

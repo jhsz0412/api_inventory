@@ -134,6 +134,10 @@ public interface IInventoryRepository
         InventoryLocationStockBalance balance,
         CancellationToken cancellationToken = default);
 
+    Task DeleteItemAsync(
+    InventoryItem item,
+    CancellationToken cancellationToken = default);
+
 
 
 }

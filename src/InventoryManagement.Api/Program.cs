@@ -29,6 +29,24 @@ using Approvals.Presentation.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("Frontend", policy =>
+    {
+        var allowedOrigins = builder.Configuration
+            .GetSection("Cors:AllowedOrigins")
+            .Get<string[]>() ?? [];
+
+        if (allowedOrigins.Length > 0)
+        {
+            policy
+                .WithOrigins(allowedOrigins)
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        }
+    });
+});
+
 
 builder.Services
     .AddControllers()
@@ -141,10 +159,35 @@ builder.Services
                     userId,
                     context.HttpContext.RequestAborted);
 
+
                 if (user is null || !user.IsActive)
                 {
                     context.Fail("The account is inactive or no longer exists.");
+                    return;
                 }
+
+                var tokenId =
+                    context.Principal?.FindFirst(JwtRegisteredClaimNames.Jti)?.Value
+                    ?? context.Principal?.FindFirst("jti")?.Value;
+
+                if (string.IsNullOrWhiteSpace(tokenId))
+                {
+                    context.Fail("Token ID is missing.");
+                    return;
+                }
+
+                var revokedTokenRepository = context.HttpContext.RequestServices
+                    .GetRequiredService<IRevokedTokenRepository>();
+
+                var isRevoked = await revokedTokenRepository.IsRevokedAsync(
+                    tokenId,
+                    context.HttpContext.RequestAborted);
+
+                if (isRevoked)
+                {
+                    context.Fail("The access token has been revoked.");
+                }
+
             }
         };
 
@@ -185,6 +228,8 @@ if (app.Environment.IsDevelopment())
 
 
 app.UseHttpsRedirection();
+
+app.UseCors("Frontend");
 
 app.UseAuthentication();
 app.UseAuthorization();
