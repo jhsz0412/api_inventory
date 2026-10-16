@@ -23,6 +23,8 @@ using Requisitions.Presentation.Controllers;
 using System.Text;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using Approvals.Infrastructure;
+using Approvals.Presentation.Controllers;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -42,8 +44,12 @@ builder.Services
         typeof(DeliveryController).Assembly)
     .AddApplicationPart(
         typeof(ReportingController).Assembly)
-    .AddApplicationPart(typeof(UsersController).Assembly)
-    .AddApplicationPart(typeof(RolesController).Assembly);
+    .AddApplicationPart(
+        typeof(UsersController).Assembly)
+    .AddApplicationPart(
+        typeof(RolesController).Assembly)
+    .AddApplicationPart(
+        typeof(ApprovalWorkflowsController).Assembly);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -73,6 +79,7 @@ builder.Services.AddInventoryInfrastructure(builder.Configuration);
 builder.Services.AddDeliveryInfrastructure(builder.Configuration);
 builder.Services.AddReportingInfrastructure(builder.Configuration);
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddApprovalsInfrastructure(builder.Configuration);
 
 var jwtSecretKey = builder.Configuration["Jwt:SecretKey"]
     ?? throw new InvalidOperationException(
@@ -164,6 +171,9 @@ builder.Services.AddScoped<
 builder.Services.AddScoped<
     IEmployeeAccountLookup,
     EmployeeAccountLookup>();
+
+builder.Services.AddScoped<
+    RequisitionApprovalCoordinator>();
 
 var app = builder.Build();
 
