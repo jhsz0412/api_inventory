@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Organization.Application.Contracts;
 using Organization.Application.Services.Departments;
 using Organization.Application.Services.Employees;
+using Organization.Application.Services.GroupMembers;
 using Organization.Application.Services.Groups;
 using Organization.Application.Services.Positions;
 using Organization.Infrastructure.Persistence;
@@ -35,7 +36,8 @@ public static class DependencyInjection
         services.AddScoped<IPositionService, PositionService>();
         services.AddScoped<IEmployeeRepository, EmployeeRepository>();
         services.AddScoped<IEmployeeService, EmployeeService>();
-
+        services.AddScoped<IGroupMemberRepository, GroupMemberRepository>();
+        services.AddScoped<IGroupMemberService, GroupMemberService>();
 
 
 

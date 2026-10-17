@@ -2,5 +2,4 @@
 
 public sealed record CreateGroupRequest(
     string Code,
-    string Name,
-    Guid DepartmentId);
+    string Name);

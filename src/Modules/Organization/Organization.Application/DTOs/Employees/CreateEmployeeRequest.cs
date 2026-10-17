@@ -6,7 +6,6 @@ public sealed record CreateEmployeeRequest(
     string FirstName,
     string LastName,
     Guid DepartmentId,
-    Guid? GroupId,
     Guid? PositionId,
     string? MiddleName,
     string? Email,

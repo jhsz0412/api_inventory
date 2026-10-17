@@ -8,7 +8,6 @@ namespace Organization.Application.Services.Employees;
 public sealed class EmployeeService(
     IEmployeeRepository employeeRepository,
     IDepartmentRepository departmentRepository,
-    IGroupRepository groupRepository,
     IPositionRepository positionRepository) : IEmployeeService
 {
     public async Task<IReadOnlyList<EmployeeResponse>> GetAllAsync(
@@ -37,7 +36,8 @@ public sealed class EmployeeService(
         var employeeNumber = request.EmployeeNumber?.Trim();
 
         if (string.IsNullOrWhiteSpace(employeeNumber))
-            throw new ArgumentException("Employee number is required.");
+            throw new ArgumentException(
+                "Employee number is required.");
 
         if (await employeeRepository.ExistsByEmployeeNumberAsync(
                 employeeNumber, cancellationToken))
@@ -48,7 +48,6 @@ public sealed class EmployeeService(
 
         await ValidateOrganizationReferencesAsync(
             request.DepartmentId,
-            request.GroupId,
             request.PositionId,
             cancellationToken);
 
@@ -57,14 +56,16 @@ public sealed class EmployeeService(
             request.FirstName,
             request.LastName,
             request.DepartmentId,
-            request.GroupId,
             request.PositionId,
             request.MiddleName,
             request.Email,
             request.ContactNumber);
 
-        await employeeRepository.AddAsync(employee, cancellationToken);
-        await employeeRepository.SaveChangesAsync(cancellationToken);
+        await employeeRepository.AddAsync(
+            employee, cancellationToken);
+
+        await employeeRepository.SaveChangesAsync(
+            cancellationToken);
 
         return MapToResponse(employee);
     }
@@ -82,7 +83,6 @@ public sealed class EmployeeService(
 
         await ValidateOrganizationReferencesAsync(
             request.DepartmentId,
-            request.GroupId,
             request.PositionId,
             cancellationToken);
 
@@ -90,13 +90,13 @@ public sealed class EmployeeService(
             request.FirstName,
             request.LastName,
             request.DepartmentId,
-            request.GroupId,
             request.PositionId,
             request.MiddleName,
             request.Email,
             request.ContactNumber);
 
-        await employeeRepository.SaveChangesAsync(cancellationToken);
+        await employeeRepository.SaveChangesAsync(
+            cancellationToken);
 
         return MapToResponse(employee);
     }
@@ -117,14 +117,14 @@ public sealed class EmployeeService(
         else
             employee.Deactivate();
 
-        await employeeRepository.SaveChangesAsync(cancellationToken);
+        await employeeRepository.SaveChangesAsync(
+            cancellationToken);
 
         return true;
     }
 
     private async Task ValidateOrganizationReferencesAsync(
         Guid departmentId,
-        Guid? groupId,
         Guid? positionId,
         CancellationToken cancellationToken)
     {
@@ -132,29 +132,12 @@ public sealed class EmployeeService(
             departmentId, cancellationToken);
 
         if (department is null)
-            throw new ArgumentException("The selected department does not exist.");
+            throw new ArgumentException(
+                "The selected department does not exist.");
 
         if (!department.IsActive)
             throw new InvalidOperationException(
                 "The selected department is inactive.");
-
-        if (groupId.HasValue)
-        {
-            var group = await groupRepository.GetByIdAsync(
-                groupId.Value, cancellationToken);
-
-            if (group is null)
-                throw new ArgumentException(
-                    "The selected group does not exist.");
-
-            if (!group.IsActive)
-                throw new InvalidOperationException(
-                    "The selected group is inactive.");
-
-            if (group.DepartmentId != departmentId)
-                throw new ArgumentException(
-                    "The selected group does not belong to the selected department.");
-        }
 
         if (positionId.HasValue)
         {
@@ -171,9 +154,8 @@ public sealed class EmployeeService(
         }
     }
 
-    private static EmployeeResponse MapToResponse(Employee employee)
-    {
-        return new EmployeeResponse(
+    private static EmployeeResponse MapToResponse(Employee employee) =>
+        new(
             employee.Id,
             employee.EmployeeNumber,
             employee.FirstName,
@@ -182,9 +164,7 @@ public sealed class EmployeeService(
             employee.Email,
             employee.ContactNumber,
             employee.DepartmentId,
-            employee.GroupId,
             employee.PositionId,
             employee.IsActive,
             employee.CreatedAtUtc);
-    }
 }

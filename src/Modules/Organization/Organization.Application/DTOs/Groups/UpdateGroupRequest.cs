@@ -1,6 +1,6 @@
-﻿namespace Organization.Application.DTOs.Groups;
+﻿
+namespace Organization.Application.DTOs.Groups;
 
 public sealed record UpdateGroupRequest(
     string Code,
-    string Name,
-    Guid DepartmentId);
+    string Name);

@@ -49,11 +49,6 @@ public sealed class EmployeeConfiguration
             .HasForeignKey(e => e.DepartmentId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasOne<Group>()
-            .WithMany()
-            .HasForeignKey(e => e.GroupId)
-            .OnDelete(DeleteBehavior.Restrict);
-
         builder.HasOne<Position>()
             .WithMany()
             .HasForeignKey(e => e.PositionId)
