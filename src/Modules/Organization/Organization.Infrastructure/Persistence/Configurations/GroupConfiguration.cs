@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Organization.Domain.Entities;
 
@@ -20,21 +21,13 @@ public sealed class GroupConfiguration : IEntityTypeConfiguration<Group>
             .HasMaxLength(150)
             .IsRequired();
 
-        entity.Property(group => group.DepartmentId)
-            .IsRequired();
-
         entity.Property(group => group.IsActive)
             .IsRequired();
 
         entity.Property(group => group.CreatedAtUtc)
             .IsRequired();
 
-        entity.HasOne<Department>()
-            .WithMany()
-            .HasForeignKey(group => group.DepartmentId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        entity.HasIndex(group => new { group.DepartmentId, group.Code })
+        entity.HasIndex(group => group.Code)
             .IsUnique();
     }
 }

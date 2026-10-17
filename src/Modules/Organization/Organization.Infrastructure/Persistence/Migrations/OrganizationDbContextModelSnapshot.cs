@@ -82,9 +82,6 @@ namespace Organization.Infrastructure.Persistence.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<Guid?>("GroupId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -107,8 +104,6 @@ namespace Organization.Infrastructure.Persistence.Migrations
                     b.HasIndex("EmployeeNumber")
                         .IsUnique();
 
-                    b.HasIndex("GroupId");
-
                     b.HasIndex("PositionId");
 
                     b.ToTable("Employees", (string)null);
@@ -128,9 +123,6 @@ namespace Organization.Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("CreatedAtUtc")
                         .HasColumnType("datetime2");
 
-                    b.Property<Guid>("DepartmentId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -141,10 +133,35 @@ namespace Organization.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DepartmentId", "Code")
+                    b.HasIndex("Code")
                         .IsUnique();
 
                     b.ToTable("Groups", "Organization");
+                });
+
+            modelBuilder.Entity("Organization.Domain.Entities.GroupMember", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreatedAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("EmployeeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("GroupId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("GroupId", "EmployeeId")
+                        .IsUnique();
+
+                    b.ToTable("GroupMembers", "Organization");
                 });
 
             modelBuilder.Entity("Organization.Domain.Entities.Position", b =>
@@ -185,22 +202,23 @@ namespace Organization.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Organization.Domain.Entities.Group", null)
-                        .WithMany()
-                        .HasForeignKey("GroupId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
                     b.HasOne("Organization.Domain.Entities.Position", null)
                         .WithMany()
                         .HasForeignKey("PositionId")
                         .OnDelete(DeleteBehavior.Restrict);
                 });
 
-            modelBuilder.Entity("Organization.Domain.Entities.Group", b =>
+            modelBuilder.Entity("Organization.Domain.Entities.GroupMember", b =>
                 {
-                    b.HasOne("Organization.Domain.Entities.Department", null)
+                    b.HasOne("Organization.Domain.Entities.Employee", null)
                         .WithMany()
-                        .HasForeignKey("DepartmentId")
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Organization.Domain.Entities.Group", null)
+                        .WithMany()
+                        .HasForeignKey("GroupId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });

@@ -10,7 +10,6 @@ public sealed record EmployeeResponse(
     string? Email,
     string? ContactNumber,
     Guid DepartmentId,
-    Guid? GroupId,
     Guid? PositionId,
     bool IsActive,
     DateTime CreatedAtUtc);

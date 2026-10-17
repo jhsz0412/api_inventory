@@ -1,5 +1,5 @@
-﻿using Organization.Application.Contracts;
-using Organization.Application.DTOs;
+﻿
+using Organization.Application.Contracts;
 using Organization.Application.DTOs.Groups;
 using Organization.Domain.Entities;
 
@@ -20,7 +20,8 @@ public sealed class GroupService(
         Guid id,
         CancellationToken cancellationToken = default)
     {
-        var group = await repository.GetByIdAsync(id, cancellationToken);
+        var group = await repository.GetByIdAsync(
+            id, cancellationToken);
 
         return group is null ? null : MapToResponse(group);
     }
@@ -32,25 +33,17 @@ public sealed class GroupService(
         var code = NormalizeCode(request.Code);
         var name = NormalizeName(request.Name);
 
-        Validate(code, name, request.DepartmentId);
-
-        if (!await repository.DepartmentExistsAsync(
-                request.DepartmentId, cancellationToken))
-        {
-            throw new ArgumentException(
-                "The specified department does not exist.");
-        }
+        Validate(code, name);
 
         if (await repository.ExistsByCodeAsync(
                 code,
-                request.DepartmentId,
                 cancellationToken: cancellationToken))
         {
             throw new InvalidOperationException(
-                $"Group code '{code}' already exists in this department.");
+                $"Group code '{code}' already exists.");
         }
 
-        var group = new Group(code, name, request.DepartmentId);
+        var group = new Group(code, name);
 
         await repository.AddAsync(group, cancellationToken);
         await repository.SaveChangesAsync(cancellationToken);
@@ -63,7 +56,8 @@ public sealed class GroupService(
         UpdateGroupRequest request,
         CancellationToken cancellationToken = default)
     {
-        var group = await repository.GetByIdAsync(id, cancellationToken);
+        var group = await repository.GetByIdAsync(
+            id, cancellationToken);
 
         if (group is null)
             return null;
@@ -71,26 +65,18 @@ public sealed class GroupService(
         var code = NormalizeCode(request.Code);
         var name = NormalizeName(request.Name);
 
-        Validate(code, name, request.DepartmentId);
-
-        if (!await repository.DepartmentExistsAsync(
-                request.DepartmentId, cancellationToken))
-        {
-            throw new ArgumentException(
-                "The specified department does not exist.");
-        }
+        Validate(code, name);
 
         if (await repository.ExistsByCodeAsync(
                 code,
-                request.DepartmentId,
                 id,
                 cancellationToken))
         {
             throw new InvalidOperationException(
-                $"Group code '{code}' already exists in this department.");
+                $"Group code '{code}' already exists.");
         }
 
-        group.UpdateDetails(code, name, request.DepartmentId);
+        group.UpdateDetails(code, name);
 
         await repository.SaveChangesAsync(cancellationToken);
 
@@ -102,7 +88,8 @@ public sealed class GroupService(
         bool isActive,
         CancellationToken cancellationToken = default)
     {
-        var group = await repository.GetByIdAsync(id, cancellationToken);
+        var group = await repository.GetByIdAsync(
+            id, cancellationToken);
 
         if (group is null)
             return false;
@@ -123,10 +110,7 @@ public sealed class GroupService(
     private static string NormalizeName(string? name) =>
         name?.Trim() ?? string.Empty;
 
-    private static void Validate(
-        string code,
-        string name,
-        Guid departmentId)
+    private static void Validate(string code, string name)
     {
         if (string.IsNullOrWhiteSpace(code))
             throw new ArgumentException("Group code is required.");
@@ -141,9 +125,6 @@ public sealed class GroupService(
         if (name.Length > 150)
             throw new ArgumentException(
                 "Group name cannot exceed 150 characters.");
-
-        if (departmentId == Guid.Empty)
-            throw new ArgumentException("A valid department is required.");
     }
 
     private static GroupResponse MapToResponse(Group group) =>
@@ -151,7 +132,6 @@ public sealed class GroupService(
             group.Id,
             group.Code,
             group.Name,
-            group.DepartmentId,
             group.IsActive,
             group.CreatedAtUtc);
 }

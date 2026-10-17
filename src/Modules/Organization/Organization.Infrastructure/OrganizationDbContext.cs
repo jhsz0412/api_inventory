@@ -10,6 +10,7 @@ public sealed class OrganizationDbContext(
 {
     public DbSet<Department> Departments => Set<Department>();
     public DbSet<Group> Groups => Set<Group>();
+    public DbSet<GroupMember> GroupMembers => Set<GroupMember>();
     public DbSet<Position> Positions => Set<Position>();
     public DbSet<Employee> Employees => Set<Employee>();
 
@@ -20,5 +21,6 @@ public sealed class OrganizationDbContext(
 
         modelBuilder.ApplyConfigurationsFromAssembly(
             typeof(OrganizationDbContext).Assembly);
+
     }
 }

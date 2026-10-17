@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿
+using Microsoft.EntityFrameworkCore;
 using Organization.Application.Contracts;
 using Organization.Domain.Entities;
 using Organization.Infrastructure.Persistence;
@@ -29,24 +30,14 @@ public sealed class GroupRepository(
 
     public async Task<bool> ExistsByCodeAsync(
         string code,
-        Guid departmentId,
         Guid? excludeId = null,
         CancellationToken cancellationToken = default)
     {
         return await dbContext.Groups.AnyAsync(
             group =>
                 group.Code == code &&
-                group.DepartmentId == departmentId &&
-                (!excludeId.HasValue || group.Id != excludeId.Value),
-            cancellationToken);
-    }
-
-    public async Task<bool> DepartmentExistsAsync(
-        Guid departmentId,
-        CancellationToken cancellationToken = default)
-    {
-        return await dbContext.Departments.AnyAsync(
-            department => department.Id == departmentId,
+                (!excludeId.HasValue ||
+                 group.Id != excludeId.Value),
             cancellationToken);
     }
 
@@ -54,7 +45,9 @@ public sealed class GroupRepository(
         Group group,
         CancellationToken cancellationToken = default)
     {
-        await dbContext.Groups.AddAsync(group, cancellationToken);
+        await dbContext.Groups.AddAsync(
+            group,
+            cancellationToken);
     }
 
     public async Task SaveChangesAsync(

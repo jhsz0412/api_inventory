@@ -13,7 +13,6 @@ public sealed class Employee
     public string? ContactNumber { get; private set; }
 
     public Guid DepartmentId { get; private set; }
-    public Guid? GroupId { get; private set; }
     public Guid? PositionId { get; private set; }
 
     public bool IsActive { get; private set; }
@@ -26,7 +25,6 @@ public sealed class Employee
         string firstName,
         string lastName,
         Guid departmentId,
-        Guid? groupId = null,
         Guid? positionId = null,
         string? middleName = null,
         string? email = null,
@@ -57,7 +55,6 @@ public sealed class Employee
         ContactNumber = NormalizeOptional(contactNumber);
 
         DepartmentId = departmentId;
-        GroupId = groupId;
         PositionId = positionId;
 
         IsActive = true;
@@ -68,7 +65,6 @@ public sealed class Employee
         string firstName,
         string lastName,
         Guid departmentId,
-        Guid? groupId,
         Guid? positionId,
         string? middleName,
         string? email,
@@ -93,7 +89,6 @@ public sealed class Employee
         ContactNumber = NormalizeOptional(contactNumber);
 
         DepartmentId = departmentId;
-        GroupId = groupId;
         PositionId = positionId;
     }
 
