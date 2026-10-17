@@ -104,6 +104,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddApprovalsInfrastructure(builder.Configuration);
 builder.Services.AddNavigationInfrastructure(builder.Configuration);
 
+
 var jwtSecretKey = builder.Configuration["Jwt:SecretKey"]
     ?? throw new InvalidOperationException(
         "JWT signing key is not configured.");
@@ -222,6 +223,17 @@ builder.Services.AddScoped<
 
 builder.Services.AddScoped<
     RequisitionApprovalCoordinator>();
+
+builder.Services.AddScoped<
+    GroupMenuVisibilityService>();
+
+builder.Services.AddScoped<
+    Navigation.Application.Interfaces.IGroupMenuVisibilityService,
+    GroupMenuVisibilityService>();
+
+builder.Services.AddScoped<
+    Navigation.Application.Interfaces.IGroupMenuAssignmentService,
+    GroupMenuAssignmentService>();
 
 var app = builder.Build();
 
