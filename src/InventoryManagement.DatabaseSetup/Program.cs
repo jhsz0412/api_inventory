@@ -18,6 +18,8 @@ using Planning.Infrastructure;
 using Planning.Infrastructure.Persistence;
 using Requisitions.Infrastructure;
 using Requisitions.Infrastructure.Persistence;
+using Navigation.Infrastructure;
+using Navigation.Infrastructure.Persistence;
 
 var apiProjectPath = Path.GetFullPath(
     Path.Combine(
@@ -53,6 +55,7 @@ services.AddRequisitionsInfrastructure(configuration);
 services.AddInventoryInfrastructure(configuration);
 services.AddDeliveryInfrastructure(configuration);
 services.AddApprovalsInfrastructure(configuration);
+services.AddNavigationInfrastructure(configuration);
 
 await using var serviceProvider = services.BuildServiceProvider();
 
@@ -66,7 +69,8 @@ var contexts = new DbContext[]
     scope.ServiceProvider.GetRequiredService<RequisitionsDbContext>(),
     scope.ServiceProvider.GetRequiredService<InventoryDbContext>(),
     scope.ServiceProvider.GetRequiredService<DeliveryDbContext>(),
-    scope.ServiceProvider.GetRequiredService<ApprovalsDbContext>()
+    scope.ServiceProvider.GetRequiredService<ApprovalsDbContext>(),
+    scope.ServiceProvider.GetRequiredService<NavigationDbContext>()
 };
 
 Console.WriteLine("Inventory Management database migration");
@@ -162,4 +166,18 @@ await InventoryManagement.DatabaseSetup.Seeding.ApprovalWorkflowSeeder
         organizationDb);
 
 Console.WriteLine("Default approval workflow seeding completed.");
+
+// Seed default Navigation data
+Console.WriteLine();
+Console.WriteLine("Seeding default Navigation data...");
+
+var navigationDb = scope.ServiceProvider
+    .GetRequiredService<NavigationDbContext>();
+
+await InventoryManagement.DatabaseSetup.Seeding.NavigationSeeder
+    .SeedAsync(
+        navigationDb,
+        identityDb);
+
+Console.WriteLine("Default Navigation data seeded.");
 
