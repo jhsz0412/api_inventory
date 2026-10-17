@@ -7,3 +7,4 @@ public sealed record UpdateInventoryItemRequest(
     Guid UnitOfMeasureId,
     string? Description,
     decimal ReorderLevel);
+

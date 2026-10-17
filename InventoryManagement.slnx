@@ -39,6 +39,12 @@
     <Project Path="src/Modules/Inventory/Inventory.Infrastructure/Inventory.Infrastructure.csproj" />
     <Project Path="src/Modules/Inventory/Inventory.Presentation/Inventory.Presentation.csproj" />
   </Folder>
+  <Folder Name="/src/Modules/Navigation/">
+    <Project Path="src/Modules/Navigation/Navigation.Application/Navigation.Application.csproj" />
+    <Project Path="src/Modules/Navigation/Navigation.Domain/Navigation.Domain.csproj" />
+    <Project Path="src/Modules/Navigation/Navigation.Infrastructure/Navigation.Infrastructure.csproj" />
+    <Project Path="src/Modules/Navigation/Navigation.Presentation/Navigation.Presentation.csproj" />
+  </Folder>
   <Folder Name="/src/Modules/Notifications/">
     <Project Path="src/Modules/Notifications/Notifications.Application/Notifications.Application.csproj" />
     <Project Path="src/Modules/Notifications/Notifications.Domain/Notifications.Domain.csproj" />

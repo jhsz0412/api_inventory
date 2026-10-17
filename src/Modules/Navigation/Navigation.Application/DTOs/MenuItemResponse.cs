@@ -8,7 +8,6 @@ public sealed record MenuItemResponse(
     string? Route,
     string? Icon,
     Guid? ParentMenuItemId,
-    Guid? PermissionId,
     int SortOrder,
     bool IsActive,
     DateTimeOffset CreatedAtUtc,

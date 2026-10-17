@@ -28,17 +28,13 @@ public sealed class MenuItemService(
                 $"A menu item with the name '{name}' already exists.");
         }
 
-        if (request.ParentMenuItemId.HasValue)
-        {
-            var parentExists = await repository.ParentExistsAsync(
+        if (request.ParentMenuItemId.HasValue &&
+            !await repository.ParentExistsAsync(
                 request.ParentMenuItemId.Value,
-                cancellationToken);
-
-            if (!parentExists)
-            {
-                throw new InvalidOperationException(
-                    "The specified active parent menu item was not found.");
-            }
+                cancellationToken))
+        {
+            throw new InvalidOperationException(
+                "The specified active parent menu item was not found.");
         }
 
         var menuItem = new MenuItem(
@@ -47,7 +43,6 @@ public sealed class MenuItemService(
             route: request.Route,
             icon: request.Icon,
             parentMenuItemId: request.ParentMenuItemId,
-            permissionId: request.PermissionId,
             sortOrder: request.SortOrder);
 
         await repository.AddAsync(menuItem, cancellationToken);
@@ -73,6 +68,7 @@ public sealed class MenuItemService(
         var menuItems = await repository.GetAllAsync(cancellationToken);
 
         return menuItems
+            .Where(menuItem => menuItem.IsActive)
             .Select(MapToResponse)
             .ToList();
     }
@@ -118,11 +114,9 @@ public sealed class MenuItemService(
                     "A menu item cannot be its own parent.");
             }
 
-            var parentExists = await repository.ParentExistsAsync(
-                parentId,
-                cancellationToken);
-
-            if (!parentExists)
+            if (!await repository.ParentExistsAsync(
+                    parentId,
+                    cancellationToken))
             {
                 throw new InvalidOperationException(
                     "The specified active parent menu item was not found.");
@@ -140,7 +134,6 @@ public sealed class MenuItemService(
             route: request.Route,
             icon: request.Icon,
             parentMenuItemId: request.ParentMenuItemId,
-            permissionId: request.PermissionId,
             sortOrder: request.SortOrder);
 
         repository.Update(menuItem);
@@ -209,7 +202,9 @@ public sealed class MenuItemService(
         string value,
         string parameterName)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(value, parameterName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(
+            value,
+            parameterName);
     }
 
     private static void ValidateSortOrder(int sortOrder)
@@ -231,7 +226,6 @@ public sealed class MenuItemService(
             Route: menuItem.Route,
             Icon: menuItem.Icon,
             ParentMenuItemId: menuItem.ParentMenuItemId,
-            PermissionId: menuItem.PermissionId,
             SortOrder: menuItem.SortOrder,
             IsActive: menuItem.IsActive,
             CreatedAtUtc: menuItem.CreatedAtUtc,

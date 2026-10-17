@@ -9,6 +9,8 @@ public sealed class NavigationDbContext(
 {
     public DbSet<MenuItem> MenuItems => Set<MenuItem>();
 
+    public DbSet<GroupMenuItem> GroupMenuItems => Set<GroupMenuItem>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

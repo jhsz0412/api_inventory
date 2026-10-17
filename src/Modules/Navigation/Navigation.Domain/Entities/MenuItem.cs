@@ -20,8 +20,6 @@ public sealed class MenuItem
     public ICollection<MenuItem> Children { get; private set; } =
         new List<MenuItem>();
 
-    public Guid? PermissionId { get; private set; }
-
     public int SortOrder { get; private set; }
 
     public bool IsActive { get; private set; } = true;
@@ -42,7 +40,6 @@ public sealed class MenuItem
         string? route = null,
         string? icon = null,
         Guid? parentMenuItemId = null,
-        Guid? permissionId = null,
         int sortOrder = 0)
     {
         SetName(name);
@@ -51,7 +48,6 @@ public sealed class MenuItem
         Route = NormalizeOptionalValue(route);
         Icon = NormalizeOptionalValue(icon);
         ParentMenuItemId = parentMenuItemId;
-        PermissionId = permissionId;
 
         SetSortOrder(sortOrder);
     }
@@ -62,7 +58,6 @@ public sealed class MenuItem
         string? route,
         string? icon,
         Guid? parentMenuItemId,
-        Guid? permissionId,
         int sortOrder)
     {
         SetName(name);
@@ -71,7 +66,6 @@ public sealed class MenuItem
         Route = NormalizeOptionalValue(route);
         Icon = NormalizeOptionalValue(icon);
         ParentMenuItemId = parentMenuItemId;
-        PermissionId = permissionId;
 
         SetSortOrder(sortOrder);
         UpdatedAtUtc = DateTimeOffset.UtcNow;
@@ -80,9 +74,7 @@ public sealed class MenuItem
     public void Activate()
     {
         if (IsActive)
-        {
             return;
-        }
 
         IsActive = true;
         UpdatedAtUtc = DateTimeOffset.UtcNow;
@@ -91,9 +83,7 @@ public sealed class MenuItem
     public void Deactivate()
     {
         if (!IsActive)
-        {
             return;
-        }
 
         IsActive = false;
         UpdatedAtUtc = DateTimeOffset.UtcNow;
