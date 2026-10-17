@@ -22,6 +22,31 @@ namespace Navigation.Infrastructure.Persistence.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("Navigation.Domain.Entities.GroupMenuItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreatedAtUtc")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<Guid>("GroupId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("MenuItemId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("MenuItemId");
+
+                    b.HasIndex("GroupId", "MenuItemId")
+                        .IsUnique();
+
+                    b.ToTable("GroupMenuItems", (string)null);
+                });
+
             modelBuilder.Entity("Navigation.Domain.Entities.MenuItem", b =>
                 {
                     b.Property<Guid>("Id")
@@ -51,9 +76,6 @@ namespace Navigation.Infrastructure.Persistence.Migrations
                     b.Property<Guid?>("ParentMenuItemId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("PermissionId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("Route")
                         .HasMaxLength(300)
                         .HasColumnType("nvarchar(300)");
@@ -74,6 +96,15 @@ namespace Navigation.Infrastructure.Persistence.Migrations
                     b.HasIndex("ParentMenuItemId", "SortOrder");
 
                     b.ToTable("MenuItems", (string)null);
+                });
+
+            modelBuilder.Entity("Navigation.Domain.Entities.GroupMenuItem", b =>
+                {
+                    b.HasOne("Navigation.Domain.Entities.MenuItem", null)
+                        .WithMany()
+                        .HasForeignKey("MenuItemId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Navigation.Domain.Entities.MenuItem", b =>

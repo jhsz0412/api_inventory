@@ -7,5 +7,4 @@ public sealed record CreateMenuItemRequest(
     string? Route = null,
     string? Icon = null,
     Guid? ParentMenuItemId = null,
-    Guid? PermissionId = null,
     int SortOrder = 0);

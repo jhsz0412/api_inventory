@@ -7,5 +7,4 @@ public sealed record UpdateMenuItemRequest(
     string? Route,
     string? Icon,
     Guid? ParentMenuItemId,
-    Guid? PermissionId,
     int SortOrder);

@@ -25,6 +25,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Approvals.Infrastructure;
 using Approvals.Presentation.Controllers;
+using Navigation.Infrastructure;
+using Navigation.Presentation.Controllers;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -67,7 +69,9 @@ builder.Services
     .AddApplicationPart(
         typeof(RolesController).Assembly)
     .AddApplicationPart(
-        typeof(ApprovalWorkflowsController).Assembly);
+        typeof(ApprovalWorkflowsController).Assembly)
+    .AddApplicationPart(
+        typeof(MenuItemsController).Assembly);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -98,6 +102,7 @@ builder.Services.AddDeliveryInfrastructure(builder.Configuration);
 builder.Services.AddReportingInfrastructure(builder.Configuration);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddApprovalsInfrastructure(builder.Configuration);
+builder.Services.AddNavigationInfrastructure(builder.Configuration);
 
 var jwtSecretKey = builder.Configuration["Jwt:SecretKey"]
     ?? throw new InvalidOperationException(

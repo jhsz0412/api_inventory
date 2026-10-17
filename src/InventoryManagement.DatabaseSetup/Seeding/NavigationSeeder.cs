@@ -45,7 +45,6 @@ public static class NavigationSeeder
                 route: null,
                 icon: "boxes",
                 parentMenuItemId: null,
-                permissionId: null,
                 sortOrder: 1);
 
             navigationDb.MenuItems.Add(inventory);
@@ -149,7 +148,6 @@ public static class NavigationSeeder
                 route: definition.Route,
                 icon: definition.Icon,
                 parentMenuItemId: inventory.Id,
-                permissionId: permissionId,
                 sortOrder: definition.SortOrder);
 
             navigationDb.MenuItems.Add(child);

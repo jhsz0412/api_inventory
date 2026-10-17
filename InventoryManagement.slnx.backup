@@ -1,0 +1,16 @@
+<Solution>
+  <Folder Name="/src/" />
+  <Folder Name="/src/Modules/" />
+  <Folder Name="/src/Modules/Navigation/">
+    <Project Path="src/Modules/Navigation/Navigation.Application/Navigation.Application.csproj" />
+    <Project Path="src/Modules/Navigation/Navigation.Domain/Navigation.Domain.csproj" />
+    <Project Path="src/Modules/Navigation/Navigation.Infrastructure/Navigation.Infrastructure.csproj" />
+    <Project Path="src/Modules/Navigation/Navigation.Presentation/Navigation.Presentation.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/InventoryManagement.ApiTests/InventoryManagement.ApiTests.csproj" />
+    <Project Path="tests/InventoryManagement.ArchitectureTests/InventoryManagement.ArchitectureTests.csproj" />
+    <Project Path="tests/InventoryManagement.IntegrationTests/InventoryManagement.IntegrationTests.csproj" />
+    <Project Path="tests/InventoryManagement.UnitTests/InventoryManagement.UnitTests.csproj" />
+  </Folder>
+</Solution>

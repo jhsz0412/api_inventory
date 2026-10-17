@@ -5,8 +5,7 @@ using Navigation.Domain.Entities;
 
 namespace Navigation.Infrastructure.Persistence.Configurations;
 
-public sealed class MenuItemConfiguration
-    : IEntityTypeConfiguration<MenuItem>
+public sealed class MenuItemConfiguration : IEntityTypeConfiguration<MenuItem>
 {
     public void Configure(EntityTypeBuilder<MenuItem> builder)
     {
@@ -28,6 +27,8 @@ public sealed class MenuItemConfiguration
         builder.Property(menu => menu.Icon)
             .HasMaxLength(100);
 
+        builder.Property(menu => menu.ParentMenuItemId);
+
         builder.Property(menu => menu.SortOrder)
             .IsRequired();
 
@@ -39,6 +40,11 @@ public sealed class MenuItemConfiguration
 
         builder.Property(menu => menu.UpdatedAtUtc);
 
+        builder.HasOne(menu => menu.ParentMenuItem)
+            .WithMany(menu => menu.Children)
+            .HasForeignKey(menu => menu.ParentMenuItemId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.HasIndex(menu => menu.Name)
             .IsUnique();
 
@@ -49,15 +55,5 @@ public sealed class MenuItemConfiguration
             menu.ParentMenuItemId,
             menu.SortOrder
         });
-
-        builder.HasOne(menu => menu.ParentMenuItem)
-            .WithMany(menu => menu.Children)
-            .HasForeignKey(menu => menu.ParentMenuItemId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        builder.HasOne(menu => menu.ParentMenuItem)
-        .WithMany(menu => menu.Children)
-        .HasForeignKey(menu => menu.ParentMenuItemId)
-        .OnDelete(DeleteBehavior.Restrict);
     }
 }
