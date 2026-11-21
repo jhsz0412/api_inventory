@@ -54,6 +54,7 @@ public sealed class MenuItemsController(
         return Ok(menuItem);
     }
 
+
     [HttpPost]
     [Authorize(Policy = "permission:navigation.menus.create")]
     public async Task<ActionResult<MenuItemResponse>> Create(
@@ -62,14 +63,30 @@ public sealed class MenuItemsController(
     {
         try
         {
+            // Validate the group before creating the menu.
+            await groupMenuAssignmentService.ValidateActiveGroupAsync(
+                request.GroupId,
+                cancellationToken);
+
+            // Create the menu record.
             var menuItem = await menuItemService.CreateAsync(
                 request,
+                cancellationToken);
+
+            // Automatically assign the new menu to the selected group.
+            await groupMenuAssignmentService.AssignMenuAsync(
+                request.GroupId,
+                menuItem.Id,
                 cancellationToken);
 
             return CreatedAtAction(
                 nameof(GetById),
                 new { id = menuItem.Id },
                 menuItem);
+        }
+        catch (KeyNotFoundException exception)
+        {
+            return NotFound(new { message = exception.Message });
         }
         catch (InvalidOperationException exception)
         {
@@ -80,6 +97,8 @@ public sealed class MenuItemsController(
             return BadRequest(new { message = exception.Message });
         }
     }
+
+
 
     [HttpPut("{id:guid}")]
     [Authorize(Policy = "permission:navigation.menus.update")]

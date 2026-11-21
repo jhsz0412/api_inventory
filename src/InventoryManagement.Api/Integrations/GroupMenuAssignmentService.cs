@@ -17,7 +17,7 @@ public sealed class GroupMenuAssignmentService(
         Guid groupId,
         CancellationToken cancellationToken = default)
     {
-        await EnsureGroupExistsAsync(groupId, cancellationToken);
+        await ValidateActiveGroupAsync(groupId, cancellationToken);
 
         var assignedMenuIds = await navigationDbContext.GroupMenuItems
             .AsNoTracking()
@@ -51,7 +51,7 @@ public sealed class GroupMenuAssignmentService(
         Guid menuItemId,
         CancellationToken cancellationToken = default)
     {
-        await EnsureGroupExistsAsync(groupId, cancellationToken);
+        await ValidateActiveGroupAsync(groupId, cancellationToken);
 
         if (menuItemId == Guid.Empty)
         {
@@ -91,7 +91,7 @@ public sealed class GroupMenuAssignmentService(
         Guid menuItemId,
         CancellationToken cancellationToken = default)
     {
-        await EnsureGroupExistsAsync(groupId, cancellationToken);
+        await ValidateActiveGroupAsync(groupId, cancellationToken);
 
         var assignment = await navigationDbContext.GroupMenuItems
             .FirstOrDefaultAsync(
@@ -111,9 +111,9 @@ public sealed class GroupMenuAssignmentService(
         return true;
     }
 
-    private async Task EnsureGroupExistsAsync(
+    public async Task ValidateActiveGroupAsync(
         Guid groupId,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken = default)
     {
         if (groupId == Guid.Empty)
         {

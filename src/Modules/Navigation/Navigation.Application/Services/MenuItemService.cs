@@ -128,6 +128,7 @@ public sealed class MenuItemService(
                 cancellationToken);
         }
 
+
         menuItem.Update(
             name: name,
             label: request.Label,
@@ -136,7 +137,17 @@ public sealed class MenuItemService(
             parentMenuItemId: request.ParentMenuItemId,
             sortOrder: request.SortOrder);
 
+        if (request.IsActive)
+        {
+            menuItem.Activate();
+        }
+        else
+        {
+            menuItem.Deactivate();
+        }
+
         repository.Update(menuItem);
+
         await repository.SaveChangesAsync(cancellationToken);
 
         return MapToResponse(menuItem);

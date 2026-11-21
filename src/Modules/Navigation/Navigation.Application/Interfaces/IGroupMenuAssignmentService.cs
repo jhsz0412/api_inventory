@@ -5,6 +5,10 @@ namespace Navigation.Application.Interfaces;
 
 public interface IGroupMenuAssignmentService
 {
+    Task ValidateActiveGroupAsync(
+        Guid groupId,
+        CancellationToken cancellationToken = default);
+
     Task<IReadOnlyList<MenuItemResponse>> GetAssignedMenuItemsAsync(
         Guid groupId,
         CancellationToken cancellationToken = default);
