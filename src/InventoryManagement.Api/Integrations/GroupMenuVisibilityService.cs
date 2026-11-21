@@ -1,10 +1,9 @@
 ﻿
-using InventoryManagement.Api.Integrations;
 using Microsoft.EntityFrameworkCore;
 using Navigation.Application.DTOs;
+using Navigation.Application.Interfaces;
 using Navigation.Infrastructure.Persistence;
 using Organization.Infrastructure.Persistence;
-using Navigation.Application.Interfaces;
 
 namespace InventoryManagement.Api.Integrations;
 
@@ -39,7 +38,7 @@ public sealed class GroupMenuVisibilityService(
             return [];
         }
 
-        // Find menus explicitly assigned to any of those groups.
+        // Find menus assigned to any of the employee's active groups.
         var assignedMenuIds = await navigationDbContext.GroupMenuItems
             .AsNoTracking()
             .Where(assignment => groupIds.Contains(assignment.GroupId))
@@ -52,15 +51,16 @@ public sealed class GroupMenuVisibilityService(
             return [];
         }
 
-        var activeMenus = await navigationDbContext.MenuItems
+        // Retrieve ALL menu items, including active and inactive items.
+        var allMenus = await navigationDbContext.MenuItems
             .AsNoTracking()
-            .Where(menu => menu.IsActive)
             .ToListAsync(cancellationToken);
 
-        var menusById = activeMenus.ToDictionary(menu => menu.Id);
+        var menusById = allMenus.ToDictionary(menu => menu.Id);
         var visibleMenuIds = new HashSet<Guid>();
 
-        // Include assigned active menus and their active ancestors.
+        // Include assigned menus and their ancestors,
+        // regardless of their IsActive value.
         foreach (var menuId in assignedMenuIds)
         {
             if (!menusById.TryGetValue(menuId, out var currentMenu))
@@ -74,7 +74,7 @@ public sealed class GroupMenuVisibilityService(
             {
                 if (!visited.Add(currentMenu.Id))
                 {
-                    // Avoid an infinite loop if bad hierarchy data exists.
+                    // Prevent an infinite loop if invalid hierarchy data exists.
                     break;
                 }
 
@@ -87,8 +87,6 @@ public sealed class GroupMenuVisibilityService(
 
                 if (!menusById.TryGetValue(parentId, out var parentMenu))
                 {
-                    // Do not return a child whose parent is inactive or missing.
-                    visibleMenuIds.Remove(currentMenu.Id);
                     break;
                 }
 
@@ -96,7 +94,7 @@ public sealed class GroupMenuVisibilityService(
             }
         }
 
-        return activeMenus
+        return allMenus
             .Where(menu => visibleMenuIds.Contains(menu.Id))
             .OrderBy(menu => menu.SortOrder)
             .ThenBy(menu => menu.Name)
