@@ -82,6 +82,51 @@ public sealed class DeliveryService : IDeliveryService
             }
         }
 
+        var requestedQuantities = requisition.Items
+            .GroupBy(item => item.InventoryItemId)
+            .ToDictionary(
+                group => group.Key,
+                group => group.Sum(item => (decimal)item.QuantityRequested));
+
+        var existingDeliveries = await _repository.GetByRequisitionIdAsync(
+            requisition.RequisitionId,
+            cancellationToken);
+
+        var preparedQuantities = existingDeliveries
+            .Where(delivery => delivery.Status != DeliveryStatus.Cancelled)
+            .SelectMany(delivery => delivery.Items)
+            .GroupBy(item => item.InventoryItemId)
+            .ToDictionary(
+                group => group.Key,
+                group => group.Sum(item => item.QuantityPrepared));
+
+        foreach (var item in request.Items)
+        {
+            if (!requestedQuantities.TryGetValue(
+                    item.InventoryItemId,
+                    out var requestedQuantity))
+            {
+                throw new InvalidOperationException(
+                    $"Inventory item '{item.InventoryItemId}' is not part of " +
+                    $"requisition '{requisition.RequisitionNumber}'.");
+            }
+
+            preparedQuantities.TryGetValue(
+                item.InventoryItemId,
+                out var alreadyPrepared);
+
+            if (alreadyPrepared + item.QuantityPrepared > requestedQuantity)
+            {
+                throw new InvalidOperationException(
+                    $"Quantity prepared for inventory item " +
+                    $"'{item.InventoryItemId}' exceeds the quantity requested on " +
+                    $"requisition '{requisition.RequisitionNumber}'. " +
+                    $"Requested: {requestedQuantity}, already prepared: " +
+                    $"{alreadyPrepared}, requested in this delivery: " +
+                    $"{item.QuantityPrepared}.");
+            }
+        }
+
         var deliveryNumber =
             $"DEL-{DateTime.UtcNow:yyyyMMddHHmmss}-{Guid.NewGuid():N}"[..32];
 

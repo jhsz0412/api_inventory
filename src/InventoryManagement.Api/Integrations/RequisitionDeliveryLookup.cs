@@ -26,6 +26,11 @@ public sealed class RequisitionDeliveryLookup : IRequisitionDeliveryLookup
             : new RequisitionDeliverySource(
                 requisition.Id,
                 requisition.RequisitionNumber,
-                requisition.Status);
+                requisition.Status,
+                requisition.Items
+                    .Select(item => new RequisitionDeliveryItemSource(
+                        item.InventoryItemId,
+                        item.QuantityRequested))
+                    .ToArray());
     }
 }

@@ -46,6 +46,16 @@ public sealed class DeliveryRepository : IDeliveryRepository
             .ToListAsync(cancellationToken);
     }
 
+    public async Task<IReadOnlyList<DeliveryEntity>> GetByRequisitionIdAsync(
+        Guid requisitionId,
+        CancellationToken cancellationToken = default)
+    {
+        return await _context.Deliveries
+            .Include(x => x.Items)
+            .Where(x => x.RequisitionId == requisitionId)
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task<bool> DeliveryNumberExistsAsync(
         string deliveryNumber,
         CancellationToken cancellationToken = default)
