@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Requisitions.Application.Interfaces;
 using Requisitions.Domain.Entities;
+using Requisitions.Domain.Enums;
 using Requisitions.Infrastructure.Persistence;
 using System.Data;
 using Microsoft.EntityFrameworkCore.Storage;
@@ -54,6 +55,22 @@ public sealed class RequisitionRepository : IRequisitionRepository
             .AsNoTracking()
             .OrderByDescending(x => x.RequestedAtUtc)
             .ToListAsync(cancellationToken);
+    }
+
+    public Task<bool> IsInventoryItemOnOpenRequisitionAsync(
+        Guid inventoryItemId,
+        CancellationToken cancellationToken = default)
+    {
+        return (
+            from item in _context.RequisitionItems.AsNoTracking()
+            join requisition in _context.Requisitions.AsNoTracking()
+                on item.RequisitionId equals requisition.Id
+            where item.InventoryItemId == inventoryItemId
+                  && requisition.Status != RequisitionStatus.Fulfilled
+                  && requisition.Status != RequisitionStatus.Rejected
+                  && requisition.Status != RequisitionStatus.Cancelled
+            select item.Id)
+            .AnyAsync(cancellationToken);
     }
 
     public async Task<int> GetNextMonthlySequenceAsync(

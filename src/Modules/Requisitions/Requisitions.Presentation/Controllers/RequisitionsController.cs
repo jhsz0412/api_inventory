@@ -96,6 +96,13 @@ public sealed class RequisitionsController : ControllerBase
 
                 return Ok(requisition);
             }
+            catch (KeyNotFoundException exception)
+            {
+                return NotFound(new
+                {
+                    message = exception.Message
+                });
+            }
             catch (ArgumentException exception)
             {
                 return BadRequest(new

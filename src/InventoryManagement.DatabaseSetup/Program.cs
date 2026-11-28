@@ -53,6 +53,11 @@ services.AddOrganizationInfrastructure(configuration);
 services.AddPlanningInfrastructure(configuration);
 services.AddRequisitionsInfrastructure(configuration);
 services.AddInventoryInfrastructure(configuration);
+
+services.AddScoped<
+    Inventory.Application.Interfaces.IInventoryItemUsageLookup,
+    InventoryManagement.DatabaseSetup.Seeding.NoRequisitionUsageLookup>();
+
 services.AddDeliveryInfrastructure(configuration);
 services.AddApprovalsInfrastructure(configuration);
 services.AddNavigationInfrastructure(configuration);

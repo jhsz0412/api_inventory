@@ -8,10 +8,14 @@ namespace Inventory.Application.Services;
 public sealed class InventoryService : IInventoryService
 {
     private readonly IInventoryRepository _repository;
+    private readonly IInventoryItemUsageLookup _itemUsageLookup;
 
-    public InventoryService(IInventoryRepository repository)
+    public InventoryService(
+        IInventoryRepository repository,
+        IInventoryItemUsageLookup itemUsageLookup)
     {
         _repository = repository;
+        _itemUsageLookup = itemUsageLookup;
     }
 
     public async Task<InventoryCategory> CreateCategoryAsync(
@@ -1448,6 +1452,38 @@ public async Task<InventoryStockBalance> AdjustStockAsync(
             throw new InvalidOperationException(
                 "The inventory item is already inactive.");
 
+        var stockBalance = await _repository.GetStockBalanceByItemIdAsync(
+            id,
+            cancellationToken);
+
+        var locationBalances =
+            await _repository.GetLocationStockBalancesByItemIdAsync(
+                id,
+                cancellationToken);
+
+        var aggregateQuantity = stockBalance?.QuantityOnHand ?? 0m;
+
+        var locationQuantity = locationBalances.Sum(
+            balance => balance.QuantityOnHand);
+
+        var quantityOnHand = Math.Max(
+            aggregateQuantity,
+            locationQuantity);
+
+        if (quantityOnHand > 0)
+            throw new InvalidOperationException(
+                $"Cannot deactivate inventory item '{item.ItemCode}' " +
+                $"because it still has {quantityOnHand} unit(s) on hand. " +
+                "Issue or adjust the stock to zero first.");
+
+        if (await _itemUsageLookup.IsItemOnOpenRequisitionAsync(
+                id,
+                cancellationToken))
+            throw new InvalidOperationException(
+                $"Cannot deactivate inventory item '{item.ItemCode}' " +
+                "because it is referenced by an open requisition. " +
+                "Complete, reject, or cancel the requisition first.");
+
         item.Deactivate();
 
         await _repository.SaveChangesAsync(cancellationToken);
@@ -1521,6 +1557,14 @@ public async Task<InventoryStockBalance> AdjustStockAsync(
                 "This inventory item cannot be permanently deleted because " +
                 "it has stock balance records or stock transaction history.");
         }
+
+        if (await _itemUsageLookup.IsItemOnOpenRequisitionAsync(
+                id,
+                cancellationToken))
+            throw new InvalidOperationException(
+                $"Cannot permanently delete inventory item '{item.ItemCode}' " +
+                "because it is referenced by an open requisition. " +
+                "Complete, reject, or cancel the requisition first.");
 
         await _repository.DeleteItemAsync(item, cancellationToken);
 

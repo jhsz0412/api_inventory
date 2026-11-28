@@ -15,6 +15,10 @@ public interface IRequisitionRepository
     Task<IReadOnlyCollection<Requisition>> GetAllAsync(
         CancellationToken cancellationToken = default);
 
+    Task<bool> IsInventoryItemOnOpenRequisitionAsync(
+        Guid inventoryItemId,
+        CancellationToken cancellationToken = default);
+
     Task<int> GetNextMonthlySequenceAsync(
         int year,
         int month,

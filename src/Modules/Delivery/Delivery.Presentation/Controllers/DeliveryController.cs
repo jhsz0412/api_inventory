@@ -26,6 +26,7 @@ public sealed class DeliveryController : ControllerBase
     [Authorize(Policy = "permission:deliveries.create")]
     [ProducesResponseType(typeof(DeliveryResponse), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<DeliveryResponse>> Create(
         [FromBody] CreateDeliveryRequest request,
         CancellationToken cancellationToken)
@@ -40,6 +41,10 @@ public sealed class DeliveryController : ControllerBase
                 nameof(GetById),
                 new { id = delivery.Id },
                 delivery);
+        }
+        catch (KeyNotFoundException ex)
+        {
+            return NotFound(new { message = ex.Message });
         }
         catch (ArgumentException ex)
         {

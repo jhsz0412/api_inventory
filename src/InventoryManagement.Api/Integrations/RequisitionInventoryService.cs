@@ -1,5 +1,6 @@
 ﻿using Inventory.Application.DTOs;
 using Inventory.Application.Services;
+using Requisitions.Application.DTOs;
 using Requisitions.Application.Interfaces;
 using RequisitionStockIssueRequest = Requisitions.Application.DTOs.RequisitionStockIssueRequest;
 
@@ -12,6 +13,22 @@ public sealed class RequisitionInventoryService : IRequisitionInventoryService
     public RequisitionInventoryService(IInventoryService inventoryService)
     {
         _inventoryService = inventoryService;
+    }
+
+    public async Task<RequisitionInventoryItem?> GetItemAsync(
+        Guid inventoryItemId,
+        CancellationToken cancellationToken = default)
+    {
+        var item = await _inventoryService.GetItemByIdAsync(
+            inventoryItemId,
+            cancellationToken);
+
+        return item is null
+            ? null
+            : new RequisitionInventoryItem(
+                item.ItemCode,
+                item.Name,
+                item.IsActive);
     }
 
     public async Task<decimal?> GetAvailableQuantityAsync(

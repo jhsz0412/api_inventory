@@ -5,6 +5,10 @@ namespace Requisitions.Application.Interfaces;
 
 public interface IRequisitionInventoryService
 {
+    Task<RequisitionInventoryItem?> GetItemAsync(
+        Guid inventoryItemId,
+        CancellationToken cancellationToken = default);
+
     Task<decimal?> GetAvailableQuantityAsync(
         Guid inventoryItemId,
         CancellationToken cancellationToken = default);
