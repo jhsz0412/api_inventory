@@ -22,7 +22,7 @@ public sealed class InventoryStockController : ControllerBase
         Guid inventoryItemId,
         CancellationToken cancellationToken)
     {
-        var balance = await _inventoryService.GetStockBalanceAsync(
+        var balance = await _inventoryService.GetStockBalanceOrEmptyAsync(
             inventoryItemId,
             cancellationToken);
 

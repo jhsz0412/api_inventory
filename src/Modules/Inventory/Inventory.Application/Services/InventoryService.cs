@@ -172,6 +172,27 @@ public sealed class InventoryService : IInventoryService
             cancellationToken);
     }
 
+    public async Task<InventoryStockBalance?> GetStockBalanceOrEmptyAsync(
+        Guid inventoryItemId,
+        CancellationToken cancellationToken = default)
+    {
+        var balance = await _repository.GetStockBalanceByItemIdAsync(
+            inventoryItemId,
+            cancellationToken);
+
+        if (balance is not null)
+            return balance;
+
+        var item = await _repository.GetItemByIdAsync(
+            inventoryItemId,
+            cancellationToken);
+
+        // An existing item without a balance row has never received stock.
+        return item is null
+            ? null
+            : new InventoryStockBalance(inventoryItemId);
+    }
+
     public async Task<InventoryStockBalance> ReceiveStockAsync(
         Guid inventoryItemId,
         decimal quantity,
