@@ -10,15 +10,25 @@ namespace Delivery.Application.Services;
 
 public sealed class DeliveryService : IDeliveryService
 {
+    private static readonly HashSet<string> DeliverableRequisitionStatuses =
+        new(StringComparer.Ordinal)
+        {
+            "Approved",
+            "FulfillmentInProgress"
+        };
+
     private readonly IDeliveryRepository _repository;
     private readonly IInventoryService _inventoryService;
+    private readonly IRequisitionDeliveryLookup _requisitionLookup;
 
     public DeliveryService(
         IDeliveryRepository repository,
-        IInventoryService inventoryService)
+        IInventoryService inventoryService,
+        IRequisitionDeliveryLookup requisitionLookup)
     {
         _repository = repository;
         _inventoryService = inventoryService;
+        _requisitionLookup = requisitionLookup;
     }
 
     public async Task<DeliveryResponse> CreateAsync(
@@ -32,6 +42,24 @@ public sealed class DeliveryService : IDeliveryService
             throw new ArgumentException(
                 "A delivery must contain at least one item.",
                 nameof(request));
+        }
+
+        var requisition = await _requisitionLookup.GetRequisitionAsync(
+            request.RequisitionId,
+            cancellationToken);
+
+        if (requisition is null)
+        {
+            throw new KeyNotFoundException(
+                $"Requisition '{request.RequisitionId}' was not found.");
+        }
+
+        if (!DeliverableRequisitionStatuses.Contains(requisition.Status))
+        {
+            throw new InvalidOperationException(
+                $"A delivery can only be prepared for an approved requisition. " +
+                $"Requisition '{requisition.RequisitionNumber}' is currently " +
+                $"'{requisition.Status}'.");
         }
 
         foreach (var item in request.Items)
