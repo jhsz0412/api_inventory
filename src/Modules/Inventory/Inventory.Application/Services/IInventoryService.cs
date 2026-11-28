@@ -35,6 +35,10 @@ public interface IInventoryService
     Guid inventoryItemId,
     CancellationToken cancellationToken = default);
 
+    Task<InventoryStockBalance?> GetStockBalanceOrEmptyAsync(
+        Guid inventoryItemId,
+        CancellationToken cancellationToken = default);
+
     Task<InventoryStockBalance> ReceiveStockAsync(
         Guid inventoryItemId,
         decimal quantity,
