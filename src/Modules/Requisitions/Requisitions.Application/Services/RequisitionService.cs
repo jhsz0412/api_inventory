@@ -110,6 +110,19 @@ public sealed class RequisitionService : IRequisitionService
                 throw new InvalidOperationException(
                         "Items can only be added to draft requisitions.");
 
+            var inventoryItem = await _inventoryService.GetItemAsync(
+                request.InventoryItemId,
+                cancellationToken);
+
+            if (inventoryItem is null)
+                throw new KeyNotFoundException(
+                    $"Inventory item '{request.InventoryItemId}' was not found.");
+
+            if (!inventoryItem.IsActive)
+                throw new InvalidOperationException(
+                    $"Inventory item '{inventoryItem.ItemCode}' is inactive " +
+                    "and cannot be added to a requisition.");
+
             var item = new RequisitionItem(
                 requisition.Id,
                 request.InventoryItemId,

@@ -34,6 +34,26 @@ public sealed class DeliveryService : IDeliveryService
                 nameof(request));
         }
 
+        foreach (var item in request.Items)
+        {
+            var inventoryItem = await _inventoryService.GetItemByIdAsync(
+                item.InventoryItemId,
+                cancellationToken);
+
+            if (inventoryItem is null)
+            {
+                throw new KeyNotFoundException(
+                    $"Inventory item '{item.InventoryItemId}' was not found.");
+            }
+
+            if (!inventoryItem.IsActive)
+            {
+                throw new InvalidOperationException(
+                    $"Inventory item '{inventoryItem.ItemCode}' is inactive " +
+                    "and cannot be prepared for delivery.");
+            }
+        }
+
         var deliveryNumber =
             $"DEL-{DateTime.UtcNow:yyyyMMddHHmmss}-{Guid.NewGuid():N}"[..32];
 

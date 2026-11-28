@@ -214,6 +214,10 @@ builder.Services.AddScoped<
     RequisitionInventoryService>();
 
 builder.Services.AddScoped<
+    Inventory.Application.Interfaces.IInventoryItemUsageLookup,
+    RequisitionItemUsageLookup>();
+
+builder.Services.AddScoped<
     IDeliveryDispatchWorkflow,
     DeliveryDispatchService>();
 
