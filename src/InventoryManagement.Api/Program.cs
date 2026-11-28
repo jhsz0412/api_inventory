@@ -222,6 +222,10 @@ builder.Services.AddScoped<
     DeliveryDispatchService>();
 
 builder.Services.AddScoped<
+    IRequisitionDeliveryLookup,
+    RequisitionDeliveryLookup>();
+
+builder.Services.AddScoped<
     IEmployeeAccountLookup,
     EmployeeAccountLookup>();
 
