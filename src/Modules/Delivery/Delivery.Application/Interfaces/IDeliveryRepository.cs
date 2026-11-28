@@ -16,6 +16,10 @@ public interface IDeliveryRepository
     Task<IReadOnlyList<DeliveryEntity>> GetAllAsync(
         CancellationToken cancellationToken = default);
 
+    Task<IReadOnlyList<DeliveryEntity>> GetByRequisitionIdAsync(
+        Guid requisitionId,
+        CancellationToken cancellationToken = default);
+
     Task<bool> DeliveryNumberExistsAsync(
         string deliveryNumber,
         CancellationToken cancellationToken = default);
